@@ -4,17 +4,16 @@
 """
 
 """
-import urllib
-
-import discord
-from discord.ext import commands
-import requests
 import json
+import urllib
 from urllib.parse import urlparse
 
+import discord
+import requests
+from discord.ext import commands
 
 
-async def json_to_embed(parsed_json:dict, ignore_keys:list = list()):
+async def json_to_embed(parsed_json: dict, ignore_keys: list = list()):
     embed = discord.Embed()
     for key in [x for x in parsed_json.keys() if x not in ignore_keys]:
         if isinstance(parsed_json[key], str) or isinstance(parsed_json[key], int) or isinstance(parsed_json[key], float):
@@ -22,8 +21,8 @@ async def json_to_embed(parsed_json:dict, ignore_keys:list = list()):
 
     return embed
 
-async def dl_json(url:str):
 
+async def dl_json(url: str):
     r = requests.get(url)
     return json.loads(r.content)
 
@@ -33,18 +32,18 @@ class Httpcat():
         self.bot = bot
 
     @commands.command(pass_context=True)
-    async def cat(self, ctx, err:str):
+    async def cat(self, ctx, err: str):
         """returns HTTP error from http.cat"""
         embed = discord.Embed()
         embed.colour = discord.Colour.dark_red()
         embed.title = "Error " + err
-        embed.url = "https://http.cat/" +err
-        embed.set_image(url="https://http.cat/" +err)
+        embed.url = "https://http.cat/" + err
+        embed.set_image(url="https://http.cat/" + err)
         await self.bot.say(embed=embed)
         await self.bot.delete_message(ctx.message)
 
     @commands.command(pass_context=True, aliases=["avatar"])
-    async def avatars(self, ctx, avatar:str):
+    async def avatars(self, ctx, avatar: str):
         """Returns an (adorable) avatar for a specified string"""
         embed = discord.Embed()
         embed.colour = discord.Colour.dark_gold()
@@ -63,7 +62,7 @@ class Httpcat():
         embed.title = "Chuck Norris once said "
         embed.description = data["value"]
         embed.url = data["url"]
-        #embed.set_image(url=data["icon_url"])
+        # embed.set_image(url=data["icon_url"])
         await self.bot.say(embed=embed)
         await self.bot.delete_message(ctx.message)
 
@@ -80,28 +79,28 @@ class Httpcat():
         await self.bot.delete_message(ctx.message)
 
     @commands.command(pass_context=True)
-    async def logo(self, ctx, company_website:str):
+    async def logo(self, ctx, company_website: str):
         """Get a company logo from their website."""
-        #uri = urlparse(company_website)
-        #domain = str(uri.netloc)
+        # uri = urlparse(company_website)
+        # domain = str(uri.netloc)
         domain = company_website
         embed = discord.Embed()
         embed.colour = discord.Colour.dark_gold()
         embed.title = domain
         embed.description = "Here is the logo you asked for !"
-        #embed.url = str(uri.geturl())
+        # embed.url = str(uri.geturl())
         embed.url = "https://" + company_website
         embed.set_image(url="https://logo.clearbit.com/" + domain)
         await self.bot.say(embed=embed)
         await self.bot.delete_message(ctx.message)
 
     @commands.command(pass_context=True, aliases=["lang", "detectlanguage"])
-    async def language(self, ctx, *, text:str):
-        """Get language used in a text using apilayer.net language API. Limited to 1 000+20% calls a month  """
-        KEY = "--"
+    async def language(self, ctx, *, text: str):
+        """Get language used in a text using apilayer.net language API. Limited to 1 000+20% calls a month          """
+        KEY = "0355ca4717378980774ef1166581f02b"
         encoded_query = urllib.parse.quote_plus(text)
         data = await dl_json("http://apilayer.net/api/detect?access_key=" + KEY + "&query=" + encoded_query)
-        if data["success"] :
+        if data["success"]:
             embed = await json_to_embed(data["results"][0])
             embed.colour = discord.Colour.dark_green()
             embed.title = "Language detection"
@@ -111,10 +110,6 @@ class Httpcat():
             await self.bot.delete_message(ctx.message)
         else:
             await self.bot.say("Language detection failed")
-
-
-
-
 
 
 def setup(bot):

@@ -22,6 +22,51 @@ class Userinfo:
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.command(pass_context=True)
+    async def hierarchy(self, ctx, member:discord.Member):
+        await self.bot.delete_message(ctx.message)
+        topr = "**Hierarchy for {member}**\n\n".format(member=member.mention)
+        for role in sorted(member.server.roles, key=lambda r: r.position, reverse=True):
+            if role in member.roles:
+                topr += "- **" + role.name.replace("@", "") + "**\n"
+            else:
+                topr += "- " + role.name.replace("@", "") + "\n"
+
+        await self.bot.say(topr)
+
+
+    @commands.command(pass_context=True)
+    async def permissions(self, ctx, member:discord.Member):
+        await self.bot.delete_message(ctx.message)
+        channel = ctx.message.channel
+        permissions = channel.permissions_for(member)
+
+        have_perms = ""
+        dosnt_have_perms = ""
+
+        position = str(member.top_role.position) + "/" + str(len(member.server.roles))
+
+        roles = ""
+
+        for role in member.roles:
+            roles += "- " + role.name.replace("@", "") + "\n"
+
+        for permission, value in permissions:
+            if value:
+                have_perms += "- " + permission + "\n"
+            else:
+                dosnt_have_perms +=  "- " + permission + "\n"
+
+        await self.bot.say("""**Permissions for {member} on {channel}:**
+Roles:
+{roles}
+Top role is at position: {pos}
+Permissions granted: 
+{have}
+Permissions not granted: 
+{dont_have}
+""".format(member=member.mention, channel="#" + channel.name, have=have_perms, dont_have=dosnt_have_perms, roles=roles, pos=position))
+
 
 
     @commands.command(pass_context=True)

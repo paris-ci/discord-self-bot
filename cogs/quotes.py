@@ -12,7 +12,7 @@ import discord
 import os
 from discord.ext import commands
 
-messages = ["He said that lol", "That's not even funny", "lol", "okay", "NO!", "See this ?", "Do you see what I see ?"]
+messages = ["He said that lol", "That's not even funny", "lol", "okay", "NO!", "See this ?", "Do you see what I see ?", "meh", "rolf", "zZZZ", "re-read yourself"]
 
 async def get_quote_embed(bot, quote):
     user = discord.utils.find(lambda m: str(m.id) == str(quote["author_id"]), bot.get_all_members() )
@@ -93,6 +93,23 @@ class Quotes:
             await self.bot.say("Unknown quote")
             return
         await self.bot.edit_message(ctx.message, new_content=random.choice(messages), embed=await get_quote_embed(self.bot, q))
+
+    @quotes.command(pass_context=True, name="random")
+    async def qrandom(self, ctx):
+
+        with open(self.dir + "current.txt", "r") as infile:
+            n = infile.read()
+
+        qid = random.randint(1, int(n))
+
+        try:
+            with open(self.dir + "quote_" + str(qid).rjust(5, '0') + ".json", "r") as infile:
+                q = json.loads(infile.read())
+        except IOError:
+            await self.bot.say("Quote what ?")
+            return
+        await self.bot.edit_message(ctx.message, new_content=random.choice(messages), embed=await get_quote_embed(self.bot, q))
+
 
 
 def setup(bot):
